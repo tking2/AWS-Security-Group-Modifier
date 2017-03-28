@@ -1,15 +1,21 @@
-# README #
+# README - AWS Security Group Modifier #
 
 This is a currently hacked-up approach to interactively manage Security Groups on AWS. I couldn't find anything on GitHub (okay I didn't look very hard), so here is my attempt.
 
-usage: aws_security_group.py [-h] (-r REGEX_PATTERN | -s SECURITY_GROUP | -u)
+## Usage 
+```bash
+aws_security_group.py [-h] (-r REGEX_PATTERN | -s SECURITY_GROUP | -u)
                              [-p PROTOCOL] [-f FROM_PORT] [-t TO_PORT]
                              [-c CIDR_RANGE] [-d] [--revoke] [-e] [-l]
+```
 
-Allow or revoke inbound access for AWS security groups. Groups are specified
-by REGEX_PATTERN, or manually passed with SECURITY_GROUP TO_PORT defaults to
-FROM_PORT. CIDR_RANGE must be CIDR notation
+Allow or revoke inbound access for AWS security groups. Groups are specified by REGEX_PATTERN (-r), or manually passed with SECURITY_GROUP (-s)
 
+TO_PORT (-t) defaults to FROM_PORT (-f) if not set.
+
+CIDR_RANGE must be CIDR notation of /xx
+
+```
 optional arguments:
   -h, --help            show this help message and exit
   -r REGEX_PATTERN, --regex-pattern REGEX_PATTERN
@@ -30,6 +36,8 @@ optional arguments:
   --revoke              if specified we revoke access instead of grant access
   -l, --list-groups     if specified we just list what security groups matched
                         the REGEX_PATTERN
+```
+
 ## Setup
 run the following command to install the tool
 ```bash
@@ -38,11 +46,11 @@ sudo python setup.py install
 
 ### Usage examples ###
 ```bash
-# Add your public IP to the approved list, searching against the security group name, description...
-aws_security_group -c P -f 443 -t 443 -protocol tcp -r "Example_Group_Name"
+# Add your public IP to the approved list for port 443, searching against the security group name, description...
+aws_security_group -c P -f 443 -protocol tcp -r "Example_Group_Na.*"
 
-# Add your public IP to the approved list
-aws_security_group -c P -f 443 -t 443 -protocol tcp -s <Security Group ID>
+# Add your public IP to the approved list for port 443-8080
+aws_security_group -c P -f 443 -t 8080 -protocol tcp -s <Security Group ID>
 
 # Revoke an IP from the approved list (Note, will not return fail if the rule doesn't exist)
-aws_security_group --revoke -c 192.168.1.1/32 -f 443 -t 443 -protocol tcp -s <Security Group ID>
+aws_security_group --revoke -c 192.168.1.1/32 -f 443 -protocol tcp -s <Security Group ID>
